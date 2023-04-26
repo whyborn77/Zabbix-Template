@@ -1,0 +1,485 @@
+{
+    "zabbix_export": {
+        "version": "6.4",
+        "template_groups": [
+            {
+                "uuid": "26331f7a49194b85a01a0ddf9d127ca4",
+                "name": "Mikrotik"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "bdc81db3a32e43a2941bba9ca4182009",
+                "template": "Mikrotik UPS over USB",
+                "name": "Mikrotik UPS over USB",
+                "description": "\u0414\u043b\u044f \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u044f \u0434\u0430\u043d\u043d\u044b\u0445 OID \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0451\u043d\u043d\u043e\u0439 \u0418\u0411\u041f \u043a \u043c\u0438\u043a\u0440\u043e\u0442\u0438\u043a\u0443 /system ups print oid",
+                "groups": [
+                    {
+                        "name": "Mikrotik"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "6348be97f0f244f9ba00181d7005aef3",
+                        "name": "\u0411\u0430\u0442\u0430\u0440\u0435\u044f \u0440\u0430\u0437\u0440\u044f\u0436\u0435\u043d\u0430!",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": "1.3.6.1.2.1.33.1.6.2.1.2.2",
+                        "key": "upsAlarmDescr",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "93f15f90af9e4c27aca032179e7fc27f",
+                        "name": "\u041f\u0435\u0440\u0435\u0433\u0440\u0443\u0437\u043a\u0430",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": "1.3.6.1.2.1.33.1.6.2.1.2.3",
+                        "key": "upsAlarmDescr.overload",
+                        "preprocessing": [
+                            {
+                                "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                "parameters": [
+                                    "6h"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "1975d74f94314119869a43454b003834",
+                        "name": "\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u0435 \u0431\u0430\u0442\u0430\u0440\u0435\u044e",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": "1.3.6.1.2.1.33.1.6.2.1.2.1",
+                        "key": "upsAlarmDescr.replacebattery",
+                        "delay": "1h",
+                        "preprocessing": [
+                            {
+                                "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                "parameters": [
+                                    "6h"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "ef2035df220144718c9c984f056a1790",
+                        "name": "\u0421\u0442\u0430\u0442\u0443\u0441",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.2.1.0",
+                        "key": "upsBatteryStatus",
+                        "valuemap": {
+                            "name": "upsBatteryStatus"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "1989490b2068485fbc0188532b29b79b",
+                        "name": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.2.7.0",
+                        "key": "upsBatteryTemperature",
+                        "units": "\u00b0C",
+                        "preprocessing": [
+                            {
+                                "type": "MULTIPLIER",
+                                "parameters": [
+                                    "0.01"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "d8df7a4edc6e4467a35097125c8a2160",
+                                "expression": "avg(/Mikrotik UPS over USB/upsBatteryTemperature,5m)>45",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "max(/Mikrotik UPS over USB/upsBatteryTemperature,5m)<43",
+                                "name": "UPS \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
+                                "priority": "AVERAGE"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b803ad7a1d24495aba23cc907dddbc4b",
+                        "name": "\u041d\u0430\u043f\u0440\u044f\u0436\u0435\u043d\u0438\u0435 \u0431\u0430\u0442\u0430\u0440\u0435\u0438",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.2.5.0",
+                        "key": "upsBatteryVoltage",
+                        "value_type": "FLOAT",
+                        "units": "\u0412",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "e991f9710a564fb091674ac95265e25e",
+                                "expression": "avg(/Mikrotik UPS over USB/upsBatteryVoltage,2h)<11",
+                                "recovery_mode": "NONE",
+                                "name": "\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u0435 \u0431\u0430\u0442\u0430\u0440\u0435\u044e",
+                                "priority": "HIGH",
+                                "manual_close": "YES"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "775639f77a6e4f02a9df17d9f19789dc",
+                        "name": "\u0417\u0430\u0440\u044f\u0434 \u0431\u0430\u0442\u0430\u0440\u0435\u0438",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.2.4.0",
+                        "key": "upsEstimatedChargeRemaining",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "58f706297ddf47c9b6a236b998820341",
+                        "name": "\u041e\u0441\u0442\u0430\u0432\u0448\u0435\u0435\u0441\u044f \u0432\u0440\u0435\u043c\u044f \u0440\u0430\u0431\u043e\u0442\u044b \u043e\u0442 \u0431\u0430\u0442\u0430\u0440\u0435\u0438",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": "1.3.6.1.2.1.33.1.2.3.0",
+                        "key": "upsEstimatedMinutesRemaining",
+                        "units": "\u043c\u0438\u043d.",
+                        "preprocessing": [
+                            {
+                                "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                "parameters": [
+                                    "6h"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "2af1520f9bdf4e0e996794a3ed143334",
+                        "name": "\u041c\u043e\u0434\u0435\u043b\u044c",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.1.2.0",
+                        "key": "upsIdentModel",
+                        "delay": "24h",
+                        "trends": "0",
+                        "value_type": "TEXT",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "5e6781a0e70a4505853e7fce20f169b1",
+                        "name": "\u0427\u0430\u0441\u0442\u043e\u0442\u0430",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.3.3.1.2.1",
+                        "key": "upsInputFrequency",
+                        "units": "\u0433\u0446",
+                        "preprocessing": [
+                            {
+                                "type": "MULTIPLIER",
+                                "parameters": [
+                                    "0.1"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "5034864bc93a46bd8efebd021e17752e",
+                        "name": "\u0412\u0445\u043e\u0434\u043d\u043e\u0435 \u043d\u0430\u043f\u0440\u044f\u0436\u0435\u043d\u0438\u0435",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.3.3.1.3.1",
+                        "key": "upsInputVoltage",
+                        "value_type": "FLOAT",
+                        "units": "\u0412",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "8181da95191149a7afe03d835af4549f",
+                        "name": "\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": "1.3.6.1.2.1.33.1.4.4.1.5.1",
+                        "key": "upsOutputPercentLoad",
+                        "units": "%",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b957ef7ac7d146589b96990a55257c97",
+                        "name": "\u0412\u044b\u0445\u043e\u0434\u043d\u043e\u0435 \u043d\u0430\u043f\u0440\u044f\u0436\u0435\u043d\u0438\u0435",
+                        "type": "SNMP_AGENT",
+                        "snmp_oid": ".1.3.6.1.2.1.33.1.4.4.1.2.1",
+                        "key": "upsOutputVoltage",
+                        "value_type": "FLOAT",
+                        "units": "\u0412",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "UPS"
+                            }
+                        ]
+                    }
+                ],
+                "dashboards": [
+                    {
+                        "uuid": "d2c4228d2f71479290641b644388c90c",
+                        "name": "\u0418\u0411\u041f",
+                        "pages": [
+                            {
+                                "widgets": [
+                                    {
+                                        "type": "graph",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "name": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "graph",
+                                        "x": "12",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "name": "\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "graph",
+                                        "y": "5",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "key": "upsInputVoltage"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "graph",
+                                        "x": "12",
+                                        "y": "5",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "key": "upsOutputVoltage"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "graph",
+                                        "y": "10",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "key": "upsBatteryVoltage"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "graph",
+                                        "x": "12",
+                                        "y": "10",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Mikrotik UPS over USB",
+                                                    "key": "upsEstimatedChargeRemaining"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "cb1454988ca0455296402824f7130a28",
+                        "name": "upsBatteryStatus",
+                        "mappings": [
+                            {
+                                "value": "1",
+                                "newvalue": "\u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u0432\u043d\u043e"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "\u043e\u0442 \u0441\u0435\u0442\u0438"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "\u043e\u0442 \u0431\u0430\u0442\u0430\u0440\u0435\u0438"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "graphs": [
+            {
+                "uuid": "5dec6fe2ff824b56b8b2ebf55e0052ab",
+                "name": "\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430",
+                "graph_items": [
+                    {
+                        "color": "FFFF00",
+                        "item": {
+                            "host": "Mikrotik UPS over USB",
+                            "key": "upsOutputPercentLoad"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "1e60509a923f4489b45e1905eed92a84",
+                "name": "\u041d\u0430\u043f\u0440\u044f\u0436\u0435\u043d\u0438\u0435",
+                "graph_items": [
+                    {
+                        "drawtype": "DOTTED_LINE",
+                        "color": "FF0000",
+                        "item": {
+                            "host": "Mikrotik UPS over USB",
+                            "key": "upsInputVoltage"
+                        }
+                    },
+                    {
+                        "sortorder": "1",
+                        "color": "00FF00",
+                        "item": {
+                            "host": "Mikrotik UPS over USB",
+                            "key": "upsOutputVoltage"
+                        }
+                    },
+                    {
+                        "sortorder": "2",
+                        "color": "FFFF00",
+                        "item": {
+                            "host": "Mikrotik UPS over USB",
+                            "key": "upsBatteryVoltage"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "0788dca972dc41b0be7d52d64d5cb0b5",
+                "name": "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
+                "yaxismax": "80",
+                "ymin_type_1": "FIXED",
+                "ymax_type_1": "FIXED",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "FF0000",
+                        "item": {
+                            "host": "Mikrotik UPS over USB",
+                            "key": "upsBatteryTemperature"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
