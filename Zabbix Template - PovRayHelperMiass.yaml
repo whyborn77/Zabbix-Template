@@ -1,0 +1,70 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 454f54c90e054f97b24eca0a84f8daf1
+      template: PovRayHelperMiass
+      name: 'PovRayHelperMiass'
+      description: |
+        ver. 0.3
+        PovRay for Outline3d by LLC PG CONTOUR
+        check process PovRayHelperMiass.exe
+      groups:
+        - name: Templates
+        - name: Templates/Applications
+      items:
+        - uuid: 79d654574206421bbb9ce5a3966d7bff
+          name: 'Проверка работы процесса PovRayHelperMiass'
+          key: 'proc.num[PovRayHelperMiass.exe]'
+          delay: '1m;30s/1-7,08:00-23:00;10m/1-7,23:01-23:59;15m/1-7,00:00-07:59'
+          history: 90d
+          trends: 180d
+          description: 'проверка запущен ли процесс PovRayHelperMiass.exe'
+          tags:
+            - tag: Application
+              value: Software
+          triggers:
+            - uuid: a93f5ea73e3f4c2dbeeb57df5aa8f176
+              expression: 'last(/PovRayHelperMiass/proc.num[PovRayHelperMiass.exe],#1)<1'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/PovRayHelperMiass/proc.num[PovRayHelperMiass.exe],#1)=0'
+              name: 'Проблема с процессом PovRayHelperMiass'
+              priority: HIGH
+              description: 'проверка запущен ли процесс PovRayHelperMiass.ex'
+              manual_close: 'YES'
+        - uuid: 9c4043654c4242acb156b1af15abcdba
+          name: 'Использование памяти процессом PovRayHelperMiass'
+          key: 'proc_info[PovRayHelperMiass.exe,wkset,sum]'
+          delay: '1m;1m/1-7,08:00-23:00;10m/1-7,23:01-23:59;15m/1-7,00:00-07:59'
+          history: 90d
+          trends: 180d
+          units: B
+          description: 'проверка запущен ли процесс PovRayHelperMiass.exe'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Software
+          triggers:
+            - uuid: e82e204a5a8442ad98b2aa13ae2aee2a
+              expression: 'last(/PovRayHelperMiass/proc_info[PovRayHelperMiass.exe,wkset,sum],#3)>=54525952'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/PovRayHelperMiass/proc_info[PovRayHelperMiass.exe,wkset,sum],#2)<33554432'
+              name: 'Высокое потребление памяти процессом'
+              status: DISABLED
+              priority: HIGH
+              manual_close: 'YES'
+      valuemaps:
+        - uuid: 8e7d9bfff07f40269a4a9aea4560e0b1
+          name: 'Проверка работы процесса PovRayHelperMiass'
+          mappings:
+            - value: '1'
+              newvalue: OK
+            - value: '0'
+              newvalue: 'not started'
