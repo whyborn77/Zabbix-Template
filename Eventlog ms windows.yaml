@@ -1,0 +1,147 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+    - uuid: 846977d1dfed4968bc5f8bdb363285bc
+      name: 'Templates/Operating systems'
+  templates:
+    - uuid: a43583279d1742409c7a13584e3c104f
+      template: 'MM Eventlog ms windows'
+      name: 'MM Eventlog ms windows'
+      groups:
+        - name: Templates
+        - name: 'Templates/Operating systems'
+      items:
+        - uuid: e96e17cbfabe4eb792b0f18aae4eef6a
+          name: 'Нехватка системных ресурсов Windows (swap)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,]'
+          delay: 10m
+          history: 180d
+          trends: '0'
+          value_type: LOG
+          description: 'системе недостаточно виртуальной памяти'
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: 71b2e78c20b14b02a9f5d0450a8161e8
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,],,"1003")=1'
+              name: 'Нехватка системных ресурсов Windows swap'
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: 1e928d09275746768308010b9e7f4d2e
+          name: 'Очистка журнала безопасности'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^1102$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          tags:
+            - tag: Application
+              value: 'Security Logs'
+          triggers:
+            - uuid: 148b973f07d0473a8683a44778d80479
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],,"4722")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],5s)=0'
+              name: 'Очистка журнала безопасности'
+              manual_close: 'YES'
+        - uuid: bdc907b0f99348ee9f8c81fbd54a8b93
+          name: 'Обнаружено повреждение файловой системы'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error",,^(55)$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: 09194f43a5e44c1a9048871704afbc2b
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^(55)$,,],,55)=1'
+              recovery_mode: NONE
+              name: 'NTFS errors'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: b662528f1cbc4c39aa71373e447fbfc2
+          name: 'Структура файловой системы на диске повреждена и непригодна для использования'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error",,^(98)$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          description: |
+            Event Type: Error
+            Event Source: NTFS
+            Event ID: 98
+            Description: The file system structure on the disk is corrupt and unusable. Please run the chkdsk utility on the volume.
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: a548657a2708480e8c75bde345c5b35f
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^(98)$,,],,"98")=1'
+              recovery_mode: NONE
+              name: 'Структура файловой системы на диске повреждена и непригодна для использования'
+              priority: DISASTER
+              manual_close: 'YES'
+        - uuid: d5f6a3d2348a4ec895a973eec9b31fdd
+          name: 'Система перезагрузилась без предварительного завершения работы'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,,,^(41)$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          description: |
+            Event ID: 41  
+            Description: The system has rebooted without cleanly shutting down first.
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: cf83253b990b4401a17b4c391f65ac1f
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^(41)$,,],,"41")=1 and nodata(/MM Eventlog ms windows/eventlog[System,,,,^(41)$,,],5s)=0'
+              name: 'Система перезагрузилась, не завершив полностью работу.'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: 9c92b6d470894981a59a0470ed5fd2b5
+          name: 'Система была выключена процессом/пользователем'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,,,^1074$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          description: 'Event ID 1074: System has been shutdown by a process/user.'
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: 192a7b5b705b47128a8ad680d500db57
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^1074$,,],,1074)=1'
+              recovery_mode: NONE
+              name: 'Система была выключена процессом/пользователем'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: a22f17b4266444398fdaf6bbc225169f
+          name: 'Предыдущее завершение работы системы было неожиданным'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,,,^6008$,,]'
+          delay: 10m
+          history: 90d
+          trends: '0'
+          value_type: LOG
+          tags:
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: e77d712fdede43b6b830c46931978d8a
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,],,6008)=1 and nodata(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,],5s)=0'
+              recovery_mode: NONE
+              name: 'ПК был выключен не корректно'
+              priority: AVERAGE
+              manual_close: 'YES'
