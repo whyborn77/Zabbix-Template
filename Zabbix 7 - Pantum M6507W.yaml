@@ -1,0 +1,219 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: f7531e2d0ea242338e00b5f01c5bf335
+      name: Templates/print
+  templates:
+    - uuid: 6c8e7a165faa45668e6e2450333dd78a
+      template: 'Pantum M6507W'
+      name: 'Pantum M6507W'
+      description: |
+        МФУ Pantum M6507W 
+        серия M6500
+      groups:
+        - name: Templates/print
+      items:
+        - uuid: 52d9b614bd5a415ea73a73dbdc2dca0d
+          name: 'Картридж осталось страниц?'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.6.3.10.2.1.3.0
+          key: Cart.pages.curr
+          delay: 12h
+          history: 90d
+          units: стр.
+          description: 'Name/OID: .1.3.6.1.6.3.10.2.1.3.0; Value (Integer): 1465'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: 0adebea7710a4055a891e34fdd949cab
+          name: 'Картридж всего страниц?'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.6.3.10.2.1.4.0
+          key: Cart.pages.max
+          delay: 12h
+          history: 1w
+          trends: '0'
+          units: стр.
+          description: 'Name/OID: .1.3.6.1.6.3.10.2.1.4.0; Value (Integer): 1500'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: d982a824fb514df983f98548441ea868
+          name: Статус
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.3.5.1.1.1
+          key: hrPrinterStatus
+          history: 1w
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: c41add9108634984b795421ed0f4e3ec
+          name: 'MAC Wi-Fi'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.2.2.1.6.4
+          key: mac.wifi
+          delay: 6h
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          description: 'Name/OID: ifPhysAddress.4; Value (OctetString):'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: 2531153d6b0e4b1d931a7e4e175b2c74
+          name: 'MAC Wi-Fi AP'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.2.2.1.6.5
+          key: mac.wifi.ap
+          delay: 6h
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          description: 'Name/OID: ifPhysAddress.5; Value (OctetString):'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: 600c4006b00441c19bb2f4f3f47cc20b
+          name: Модель
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.40093.6.1.1
+          key: ModelName
+          delay: 12h
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          description: 'Name/OID: .1.3.6.1.4.1.40093.6.1.1; Value (OctetString): M6500W'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: b8e15864b38646d8a18fca5ddcef72bf
+          name: 'Отпечатано всего страниц'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.10.2.1.4.1
+          key: PageCounter
+          delay: '1h;60m/1-7,08:00-21:59'
+          history: 90d
+          units: стр.
+          description: 'Общее количество отпечатанных страниц'
+          tags:
+            - tag: Application
+              value: 'Kyocera Printers'
+          triggers:
+            - uuid: b612770e7afc49ed872579e42377aa9c
+              expression: 'last(/Pantum M6507W/PageCounter)>=100000'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Pantum M6507W/PageCounter)<100000'
+              name: 'Превышен ресурс печки принтера'
+              priority: HIGH
+              description: |
+                дахрен его знает сколько у этого китайца ресурс
+                100к по дефолту на печку
+              manual_close: 'YES'
+        - uuid: dd9b31aa46e94487983c7cb0cfd542ea
+          name: Картридж
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.6.1
+          key: prtMarkerSuppliesDescription
+          delay: 6h
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          description: 'Name/OID: .1.3.6.1.4.1.40093.8.1.3; Value (OctetString): PC211'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: bc289a0f6cda4129b2eeff4358d69eba
+          name: 'Тонер: кол-во тонера'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.9.1
+          key: prtMarkerSuppliesLevel
+          delay: 5m
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+          triggers:
+            - uuid: fbe425434d4f41ecbe3e559b14ecfc4e
+              expression: 'last(/Pantum M6507W/prtMarkerSuppliesLevel)<=5'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Pantum M6507W/prtMarkerSuppliesLevel)>5'
+              name: 'Тонера меньше 5%'
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: 3e8f620bcdc34bdd86397fde5cb4b5cf
+          name: 'Тонер: максимальное кол-во'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.8.1
+          key: prtMarkerSuppliesMaxCapacity
+          delay: 12h
+          history: '0'
+          trends: '0'
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: c6cc0466ad3c4dd2b1add31ed6445a8f
+          name: 'Серийный номер'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.40093.6.1.2
+          key: SerialNumber
+          delay: 12h
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          description: 'Name/OID: .1.3.6.1.4.1.40093.6.1.2; Value (OctetString): CL3UW00GX3'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: 3ce48471022f4908bf4d5a89b3fef681
+          name: 'Время работы'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.1.1.0
+          key: UpTime
+          delay: 10m
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+        - uuid: d99167004c374b03a49a32d55a2f8885
+          name: 'Время работы v1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: UpTime1
+          delay: 10m
+          description: 1.3.6.1.2.1.1.3.0
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'Printer Information'
+      valuemaps:
+        - uuid: 3d354269d65943d9b0f6c8f17d6aef0d
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: 'error?'
+            - value: '3'
+              newvalue: idle
+  graphs:
+    - uuid: dfd042369bd046cb919aea4cc576a6a8
+      name: 'Ч\Б тонер %'
+      ymin_type_1: FIXED
+      graph_items:
+        - drawtype: FILLED_REGION
+          color: '000000'
+          calc_fnc: ALL
+          item:
+            host: 'Pantum M6507W'
+            key: prtMarkerSuppliesLevel
