@@ -10,6 +10,9 @@ zabbix_export:
       description: |
         МФУ Pantum M6507W 
         серия M6500
+        
+        7615053@gmail.com
+        v0.3a
       groups:
         - name: Templates/print
       items:
