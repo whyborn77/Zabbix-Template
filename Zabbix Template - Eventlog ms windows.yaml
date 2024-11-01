@@ -10,7 +10,7 @@ zabbix_export:
       template: 'MM Eventlog ms windows'
       name: 'MM Eventlog ms windows'
       description: |
-        version. 0.5
+        version. 0.7a
         Нехватка системных ресурсов Windows (swap) System 55
         Очистка журнала безопасности Security 1102
         Предыдущее завершение работы системы было неожиданным System 6008
@@ -25,10 +25,10 @@ zabbix_export:
           name: 'Нехватка системных ресурсов Windows (swap)'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,]'
-          delay: 10m
+          delay: 15m
           history: 180d
-          trends: '0'
           value_type: LOG
+          trends: '0'
           description: 'системе недостаточно виртуальной памяти'
           tags:
             - tag: Application
@@ -45,73 +45,26 @@ zabbix_export:
           name: 'Очистка журнала безопасности'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^1102$,,]'
-          delay: 10m
+          delay: 15m
           history: 90d
-          trends: '0'
           value_type: LOG
+          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
-            - tag: Application
-              value: 'Security Logs'
           triggers:
             - uuid: 148b973f07d0473a8683a44778d80479
               expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],,"4722")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],5s)=0'
               name: 'Очистка журнала безопасности'
               manual_close: 'YES'
-        - uuid: bdc907b0f99348ee9f8c81fbd54a8b93
-          name: 'Обнаружено повреждение файловой системы'
-          type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,"Error",,^(55)$,,]'
-          delay: 10m
-          history: 90d
-          trends: '0'
-          value_type: LOG
-          tags:
-            - tag: Application
-              value: 'MS Event Logs'
-            - tag: Application
-              value: 'Users Logs'
-          triggers:
-            - uuid: 09194f43a5e44c1a9048871704afbc2b
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^(55)$,,],,55)=1'
-              recovery_mode: NONE
-              name: 'NTFS errors'
-              priority: HIGH
-              manual_close: 'YES'
-        - uuid: b662528f1cbc4c39aa71373e447fbfc2
-          name: 'Структура файловой системы на диске повреждена и непригодна для использования'
-          type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,"Error",,^(98)$,,]'
-          delay: 10m
-          history: 90d
-          trends: '0'
-          value_type: LOG
-          description: |
-            Event Type: Error
-            Event Source: NTFS
-            Event ID: 98
-            Description: The file system structure on the disk is corrupt and unusable. Please run the chkdsk utility on the volume.
-          tags:
-            - tag: Application
-              value: 'MS Event Logs'
-            - tag: Application
-              value: 'Users Logs'
-          triggers:
-            - uuid: a548657a2708480e8c75bde345c5b35f
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^(98)$,,],,"98")=1'
-              recovery_mode: NONE
-              name: 'Структура файловой системы на диске повреждена и непригодна для использования'
-              priority: DISASTER
-              manual_close: 'YES'
         - uuid: d5f6a3d2348a4ec895a973eec9b31fdd
           name: 'Система перезагрузилась без предварительного завершения работы'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,,,^(41)$,,]'
-          delay: 10m
+          key: 'eventlog[System,,"Error",,^41$,,]'
+          delay: 15m
           history: 90d
-          trends: '0'
           value_type: LOG
+          trends: '0'
           description: |
             Event ID: 41  
             Description: The system has rebooted without cleanly shutting down first.
@@ -122,18 +75,67 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: cf83253b990b4401a17b4c391f65ac1f
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^(41)$,,],,"41")=1 and nodata(/MM Eventlog ms windows/eventlog[System,,,,^(41)$,,],5s)=0'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,],,"41")=1 and nodata(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,],5s)=0'
               name: 'Система перезагрузилась, не завершив полностью работу.'
               priority: HIGH
+              manual_close: 'YES'
+        - uuid: bdc907b0f99348ee9f8c81fbd54a8b93
+          name: 'Обнаружено повреждение файловой системы'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error",,^55$,,]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: 'eventlog[System,,"Error",,^(55)$,,]'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: 09194f43a5e44c1a9048871704afbc2b
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^55$,,],,55)=1'
+              recovery_mode: NONE
+              name: 'NTFS errors'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: b662528f1cbc4c39aa71373e447fbfc2
+          name: 'Структура файловой системы на диске повреждена и непригодна для использования'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error",,^98$,,]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Event Type: Error
+            Event Source: NTFS
+            Event ID: 98
+            Description: The file system structure on the disk is corrupt and unusable. Please run the chkdsk utility on the volume.
+            eventlog[System,,"Error",,^(98)$,,]
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: a548657a2708480e8c75bde345c5b35f
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^98$,,],,"98")=1'
+              recovery_mode: NONE
+              name: 'Volume needs to be taken offline to perform a full chkdsk'
+              event_name: 'Структура файловой системы на диске повреждена'
+              priority: HIGH
+              description: 'Структура файловой системы на диске повреждена и непригодна для использования'
               manual_close: 'YES'
         - uuid: 9c92b6d470894981a59a0470ed5fd2b5
           name: 'Система была выключена процессом/пользователем'
           type: ZABBIX_ACTIVE
           key: 'eventlog[System,,,,^1074$,,]'
-          delay: 10m
+          delay: 15m
           history: 90d
-          trends: '0'
           value_type: LOG
+          trends: '0'
           description: 'Event ID 1074: System has been shutdown by a process/user.'
           tags:
             - tag: Application
@@ -151,10 +153,10 @@ zabbix_export:
           name: 'Предыдущее завершение работы системы было неожиданным'
           type: ZABBIX_ACTIVE
           key: 'eventlog[System,,,,^6008$,,]'
-          delay: 10m
+          delay: 15m
           history: 90d
-          trends: '0'
           value_type: LOG
+          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
