@@ -1,0 +1,386 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+    - uuid: 846977d1dfed4968bc5f8bdb363285bc
+      name: 'Templates/Operating systems'
+  templates:
+    - uuid: 725159dee00240ccbb4a3108b8399d43
+      template: 'Eventlog for RDP Sessions'
+      name: 'Eventlog for RDP Sessions'
+      description: 'version. 0.3a'
+      groups:
+        - name: Templates
+        - name: 'Templates/Operating systems'
+      items:
+        - uuid: cab5794b81984d25b0ee5a87bac938ae
+          name: 'RDP: Успешный вход в систему'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^21$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Это событие появляется после успешной аутентификации пользователя
+            означает успешный запуск оболочки Explorer (появление окна рабочего стола в RDP сессии).
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+          triggers:
+            - uuid: d93209545f3f4f0287162b17b5917d32
+              expression: 'last(/Eventlog for RDP Sessions/eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^21$,,skip])="sa"'
+              name: 10.10.99.244
+              priority: WARNING
+        - uuid: e4c2f50db5ac439dbbfd46859275e7be
+          name: 'RDP: Уведомление о запуске оболочки пользователем'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^22$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: '“Remote Desktop Services: Shell start notification received:” Indicates successful RDP logon and shell (i.e. Windows GUI Desktop) start, so long as the “Source Network Address” is NOT “LOCAL”.'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 2e32c70ebe75454cba885b233fa2abbc
+          name: 'RDP: Выход из сеанса выполнен успешно (logoff)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^23$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Description: “Remote Desktop Services: Session logoff succeeded:”
+            
+            The user has initiated a logoff. This is typically paired with an Event ID 4634 (logoff). Take note of the SessionID as a means of tracking/associating additional Event Log activity with this user’s RDP session. This event with a will also be generated upon a system shutdown/reboot.
+            
+            The user initiated a formal system logoff (versus a simple session disconnect).
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 6fb337387f1f480b80a96379833b5c27
+          name: 'RDP:  Сеанс был отключен'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^24$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            (Session Disconnect/Reconnect)
+            
+            Description: “Remote Desktop Services: Session has been disconnected:” The user has disconnected from an RDP session, so long as the “Source Network Address” is NOT “LOCAL”.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 50beb3481f194df586cae7bf4c90a38b
+          name: 'RDP:  пользователь переподключился(реконект)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^25$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            пользователь переподключился к своей имеющейся RDP сессии на сервере.
+            
+            (Session Disconnect/Reconnect)
+            
+            Description: “Remote Desktop Services: Session reconnection succeeded:” The user has reconnected to an existing RDP session, so long as the “Source Network Address” is NOT “LOCAL”.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 59d76a37379447e3b26faeb18f79aa6c
+          name: 'RDP:  пользователь сам отключился от своей RDP сессии'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^39$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            пользователь сам отключился от своей RDP сессии, выбрав соответствующий пункт меню (а не просто закрыл окно RDP клиента).
+            
+            (Session Disconnect/Reconnect)
+            
+            Description: “Session has been disconnected by session ” Cases where the Session ID of differs from may indicate a separate RDP session has disconnected (i.e. kicked off) the given user.
+            
+            The user formally disconnected from the RDP session.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: eb1bf68661e84cc98ef3c3a419d21bca
+          name: 'RDP:  пользователь закрыл окно RDP клиента (см. тип)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^40$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            reason code 0 (No additional information is available) – обычно говорит о том, что пользователь просто закрыл окно RDP клиента.
+            reason code 5 (The client’s connection was replaced by another connection) – пользователь переподключился к своей старой сессии.
+            reason code 11 (User activity has initiated the disconnect) – пользователь сам нажал на кнопку Disconnect в меню.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 1ef1d57bd28049b3a1ea4cd4cc682686
+          name: 'RDP: Успешная проверка подлинности пользователя'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational,,,,^1149$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Наличие этого события не свидетельствует об успешной аутентификации пользователя
+            
+            Description: “User authentication succeeded”
+            
+            This event actually DOES NOT indicate a successful user authentication. Someone launched an RDP client, specified the target machine (possibly with a username and domain), and hit enter to make a successful network connection to the target. Nothing more, nothing less.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: b07a40afb85c416faf2d5836bed76a84
+          name: 'RDP: Аутентификация (см. тип)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational,,,,^4624$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            (Authentication)
+            
+            LogonType:
+            
+            Type 3 (Network) when NLA is Enabled (and at times even when it’s not) followed by
+            
+            Type 10 (RemoteInteractive / a.k.a. Terminal Services / a.k.a. Remote Desktop)
+            
+            Type 7 from a Remote IP (if it’s a reconnection from a previous/existing RDP session)
+            
+            User successfully logged on to this system with the specified TargetUserName and TargetDomainName from the specified IpAddress.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 4a349a5e2fab46f6bd0c2a321d5857cb
+          name: 'RDP: Аутентификация (см. тип)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational,,,,^4625$,,skip]'
+          delay: 15m
+          history: 180d
+          value_type: LOG
+          trends: '0'
+          description: |
+            (Authentication)
+            
+            LogonType:
+            
+            Type 3 (Network) when NLA is Enabled (and at times even when it’s not) and/or
+            
+            Type 10 (RemoteInteractive / a.k.a. Terminal Services / a.k.a. Remote Desktop)
+            
+            User failed to log on to this system with the specified TargetUserName and TargetDomainName from the specified IpAddress.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 9cff36dea9034bc789f8a8da1b4ddbbc
+          name: 'Security Logon успешная аутентификация'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4624$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            успешная аутентификация — An account was successfully logged on
+            
+            LogonType = 10 или 3 — при входе через терминальную службу RDP —.
+            LogonType = 7, значит выполнено переподключение к уже существующему RDP сеансу.
+            LogonType = 5 – событие RDP подключения к консоли сервера (в режиме mstsc.exe /admin)
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 1fb2e98591e943cd8359363ef82a5300
+          name: 'Security Logon ошибка аутентификации'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4625$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            (ошибка аутентификации — An account failed to log on). Обратите внимание на значение LogonType в событии.
+            
+            LogonType = 10 или 3 — при входе через терминальную службу RDP —.
+            LogonType = 7, значит выполнено переподключение к уже существующему RDP сеансу.
+            LogonType = 5 – событие RDP подключения к консоли сервера (в режиме mstsc.exe /admin)
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 97085534556146278dd48ea14f7da52c
+          name: 'Security Logon Учетная запись была отключена (см. тип)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4634$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            LogonType:
+            10 (RemoteInteractive / a.k.a. Terminal Services / a.k.a. Remote Desktop)
+            Type 7 from a Remote IP (if it’s a reconnection from a previous/existing RDP session)
+            A user disconnected from, or logged off, an RDP session.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 0ee132713e4a481f8c169e4bd83b0ca9
+          name: 'Security Logon Выход из системы по инициативе пользователя'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4647$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            User-initiated logoff
+            The user initiated a formal logoff (NOT a simple disconnect).
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 79a24bfb41fa491d8abf9c0da93dfa17
+          name: 'Security Logon Переподключение к RDP сессии (новый LogonID)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4778$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Событие с EventID – 4778 в журнале Windows -> Security (A session was reconnected to a Window Station). Пользователь переподключился к RDP сессии (пользователю выдается новый LogonID).
+            
+            (Session Disconnect/Reconnect)
+            Description: “A session was reconnected to a Window Station.”
+            The user reconnected to an existing RDP session.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: 6346dda8da7f47a3aa71f98188dfffbd
+          name: 'Security Logon Отключение от RDP сеанса.'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4779$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: 'Событие с EventID 4779 в журнале Windows -> Security (A session was disconnected from a Window Station). Отключение от RDP сеанса.'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: Security
+            - tag: Application
+              value: 'Users Logs'
+        - uuid: c7e4263a0e0a4352a4cfc592aba60498
+          name: 'System Logon пользователь инициировал завершение RDP сессии'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,,,^9009$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          trends: '0'
+          description: |
+            Выход из системы по инициативе пользователя
+            A user has closed out an RDP connection.
+            
+            
+            Событие Event 9009 (The Desktop Window Manager has exited with code (<X>) в журнале System говорит о том, что пользователь инициировал завершение RDP сессии, и окно и графический shell пользователя был завершен.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: RDP
+            - tag: Application
+              value: System
+            - tag: Application
+              value: 'Users Logs'
+      tags:
+        - tag: Application
+          value: RDP
