@@ -10,7 +10,7 @@ zabbix_export:
       template: 'MM Eventlog ms windows'
       name: 'MM Eventlog ms windows'
       description: |
-        version. 0.7a
+        version. 0.8a 7615053@gmail.com
         Нехватка системных ресурсов Windows (swap) System 55
         Очистка журнала безопасности Security 1102
         Предыдущее завершение работы системы было неожиданным System 6008
@@ -24,7 +24,7 @@ zabbix_export:
         - uuid: e96e17cbfabe4eb792b0f18aae4eef6a
           name: 'Нехватка системных ресурсов Windows (swap)'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,]'
+          key: 'eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,skip]'
           delay: 15m
           history: 180d
           value_type: LOG
@@ -37,14 +37,14 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 71b2e78c20b14b02a9f5d0450a8161e8
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,],,"1003")=1'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,skip],,"1003")=1'
               name: 'Нехватка системных ресурсов Windows swap'
-              priority: AVERAGE
+              priority: HIGH
               manual_close: 'YES'
         - uuid: 1e928d09275746768308010b9e7f4d2e
           name: 'Очистка журнала безопасности'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[Security,,,,^1102$,,]'
+          key: 'eventlog[Security,,,,^1102$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -54,13 +54,14 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 148b973f07d0473a8683a44778d80479
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],,"4722")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,],5s)=0'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],,"4722")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],5s)=0'
               name: 'Очистка журнала безопасности'
+              priority: HIGH
               manual_close: 'YES'
         - uuid: d5f6a3d2348a4ec895a973eec9b31fdd
           name: 'Система перезагрузилась без предварительного завершения работы'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,"Error",,^41$,,]'
+          key: 'eventlog[System,,"Error",,^41$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -75,14 +76,14 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: cf83253b990b4401a17b4c391f65ac1f
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,],,"41")=1 and nodata(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,],5s)=0'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],,"41")=1 and nodata(/MM Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],5s)=0'
               name: 'Система перезагрузилась, не завершив полностью работу.'
               priority: HIGH
               manual_close: 'YES'
         - uuid: bdc907b0f99348ee9f8c81fbd54a8b93
           name: 'Обнаружено повреждение файловой системы'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,"Error",,^55$,,]'
+          key: 'eventlog[System,,"Error",,^55$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -95,7 +96,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 09194f43a5e44c1a9048871704afbc2b
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^55$,,],,55)=1'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^55$,,skip],,55)=1'
               recovery_mode: NONE
               name: 'NTFS errors'
               priority: HIGH
@@ -103,7 +104,7 @@ zabbix_export:
         - uuid: b662528f1cbc4c39aa71373e447fbfc2
           name: 'Структура файловой системы на диске повреждена и непригодна для использования'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,"Error",,^98$,,]'
+          key: 'eventlog[System,,"Error",,^98$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -121,7 +122,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: a548657a2708480e8c75bde345c5b35f
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^98$,,],,"98")=1'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,"Error",,^98$,,skip],,"98")=1'
               recovery_mode: NONE
               name: 'Volume needs to be taken offline to perform a full chkdsk'
               event_name: 'Структура файловой системы на диске повреждена'
@@ -131,7 +132,7 @@ zabbix_export:
         - uuid: 9c92b6d470894981a59a0470ed5fd2b5
           name: 'Система была выключена процессом/пользователем'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,,,^1074$,,]'
+          key: 'eventlog[System,,,,^1074$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -144,7 +145,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 192a7b5b705b47128a8ad680d500db57
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^1074$,,],,1074)=1'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^1074$,,skip],,1074)=1'
               recovery_mode: NONE
               name: 'Система была выключена процессом/пользователем'
               priority: INFO
@@ -152,7 +153,7 @@ zabbix_export:
         - uuid: a22f17b4266444398fdaf6bbc225169f
           name: 'Предыдущее завершение работы системы было неожиданным'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[System,,,,^6008$,,]'
+          key: 'eventlog[System,,,,^6008$,,skip]'
           delay: 15m
           history: 90d
           value_type: LOG
@@ -164,7 +165,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: e77d712fdede43b6b830c46931978d8a
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,],,6008)=1 and nodata(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,],5s)=0'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,skip],,6008)=1 and nodata(/MM Eventlog ms windows/eventlog[System,,,,^6008$,,skip],5s)=0'
               recovery_mode: NONE
               name: 'ПК был выключен не корректно'
               priority: AVERAGE
