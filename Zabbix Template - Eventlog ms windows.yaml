@@ -10,13 +10,10 @@ zabbix_export:
       template: 'MM Eventlog ms windows'
       name: 'MM Eventlog ms windows'
       description: |
-        version. 0.8a 7615053@gmail.com
-        Нехватка системных ресурсов Windows (swap) System 55
-        Очистка журнала безопасности Security 1102
-        Предыдущее завершение работы системы было неожиданным System 6008
-        Система была выключена процессом/пользователем System 1074
-        Система перезагрузилась без предварительного завершения работы System 41
-        Структура файловой системы на диске повреждена и непригодна для использования System 98
+        version. 0.9a
+        7615053@gmail.com
+        
+        Этот шаблон создан преимущественно для локальных ПК с целью выявления сбоев из-за некорректности действия пользователя
       groups:
         - name: Templates
         - name: 'Templates/Operating systems'
@@ -54,7 +51,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 148b973f07d0473a8683a44778d80479
-              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],,"4722")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],5s)=0'
+              expression: 'logeventid(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/MM Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],5s)=0'
               name: 'Очистка журнала безопасности'
               priority: HIGH
               manual_close: 'YES'
@@ -170,3 +167,6 @@ zabbix_export:
               name: 'ПК был выключен не корректно'
               priority: AVERAGE
               manual_close: 'YES'
+      tags:
+        - tag: Application
+          value: 'MS Event Logs'
