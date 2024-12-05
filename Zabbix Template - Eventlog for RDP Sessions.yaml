@@ -7,9 +7,11 @@ zabbix_export:
       name: 'Templates/Operating systems'
   templates:
     - uuid: 725159dee00240ccbb4a3108b8399d43
-      template: 'Eventlog for RDP Sessions'
-      name: 'Eventlog for RDP Sessions'
-      description: 'version. 0.3a'
+      template: 'MM Eventlog for RDP Sessions'
+      name: 'MM Eventlog for RDP Sessions'
+      description: |
+        version. 0.4a
+        7615053@gmail.com
       groups:
         - name: Templates
         - name: 'Templates/Operating systems'
@@ -34,7 +36,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: d93209545f3f4f0287162b17b5917d32
-              expression: 'last(/Eventlog for RDP Sessions/eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^21$,,skip])="sa"'
+              expression: 'last(/MM Eventlog for RDP Sessions/eventlog[Microsoft-Windows-TerminalServices-LocalSessionManager/Operational,,,,^21$,,skip])="sa"'
               name: 10.10.99.244
               priority: WARNING
         - uuid: e4c2f50db5ac439dbbfd46859275e7be
@@ -185,6 +187,7 @@ zabbix_export:
           history: 180d
           value_type: LOG
           trends: '0'
+          status: DISABLED
           description: |
             (Authentication)
             
@@ -213,15 +216,17 @@ zabbix_export:
           value_type: LOG
           trends: '0'
           description: |
-            (Authentication)
+            Тип входа в систему — Описание
             
-            LogonType:
-            
-            Type 3 (Network) when NLA is Enabled (and at times even when it’s not) and/or
-            
-            Type 10 (RemoteInteractive / a.k.a. Terminal Services / a.k.a. Remote Desktop)
-            
-            User failed to log on to this system with the specified TargetUserName and TargetDomainName from the specified IpAddress.
+            2 — Интерактивный (вход с клавиатуры или экрана системы)
+            3 — Сетевой (например, подключение к общей папке на этом компьютере из любого места в сети или IIS вход — Никогда не заходил 528 на Windows Server 2000 и выше. См. событие 540)
+            4 — Пакет (batch) (например, запланированная задача)
+            5 — Служба (Запуск службы)
+            7 — Разблокировка (например, необслуживаемая рабочая станция с защищенным паролем скринсейвером)
+            8 — NetworkCleartext (Вход с полномочиями (credentials), отправленными в виде простого текст. Часто обозначает вход в IIS с “базовой аутентификацией”)
+            9 — NewCredentials
+            10 — RemoteInteractive (Терминальные службы, Удаленный рабочий стол или удаленный помощник)
+            11 — CachedInteractive (вход с кешированными доменными полномочиями, например, вход на рабочую станцию, которая находится не в сети)
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -230,7 +235,7 @@ zabbix_export:
             - tag: Application
               value: 'Users Logs'
         - uuid: 9cff36dea9034bc789f8a8da1b4ddbbc
-          name: 'Security Logon успешная аутентификация'
+          name: 'Security Logon Успешный вход в систему (Только Windows 2000, XP, 2003)'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4624$,,skip]'
           delay: 15m
@@ -238,11 +243,21 @@ zabbix_export:
           value_type: LOG
           trends: '0'
           description: |
-            успешная аутентификация — An account was successfully logged on
+            540 или 4624 — Успешный сетевой вход в систему (Только Windows 2000, XP, 2003)
             
-            LogonType = 10 или 3 — при входе через терминальную службу RDP —.
-            LogonType = 7, значит выполнено переподключение к уже существующему RDP сеансу.
-            LogonType = 5 – событие RDP подключения к консоли сервера (в режиме mstsc.exe /admin)
+            Типы входов в систему (Logon Types)
+            
+            Тип входа в систему — Описание
+            
+            2 — Интерактивный (вход с клавиатуры или экрана системы)
+            3 — Сетевой (например, подключение к общей папке на этом компьютере из любого места в сети или IIS вход — Никогда не заходил 528 на Windows Server 2000 и выше. См. событие 540)
+            4 — Пакет (batch) (например, запланированная задача)
+            5 — Служба (Запуск службы)
+            7 — Разблокировка (например, необслуживаемая рабочая станция с защищенным паролем скринсейвером)
+            8 — NetworkCleartext (Вход с полномочиями (credentials), отправленными в виде простого текст. Часто обозначает вход в IIS с “базовой аутентификацией”)
+            9 — NewCredentials
+            10 — RemoteInteractive (Терминальные службы, Удаленный рабочий стол или удаленный помощник)
+            11 — CachedInteractive (вход с кешированными доменными полномочиями, например, вход на рабочую станцию, которая находится не в сети)
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -263,9 +278,19 @@ zabbix_export:
           description: |
             (ошибка аутентификации — An account failed to log on). Обратите внимание на значение LogonType в событии.
             
-            LogonType = 10 или 3 — при входе через терминальную службу RDP —.
-            LogonType = 7, значит выполнено переподключение к уже существующему RDP сеансу.
-            LogonType = 5 – событие RDP подключения к консоли сервера (в режиме mstsc.exe /admin)
+            Типы входов в систему (Logon Types)
+            
+            Тип входа в систему — Описание
+            
+            2 — Интерактивный (вход с клавиатуры или экрана системы)
+            3 — Сетевой (например, подключение к общей папке на этом компьютере из любого места в сети или IIS вход — Никогда не заходил 528 на Windows Server 2000 и выше. См. событие 540)
+            4 — Пакет (batch) (например, запланированная задача)
+            5 — Служба (Запуск службы)
+            7 — Разблокировка (например, необслуживаемая рабочая станция с защищенным паролем скринсейвером)
+            8 — NetworkCleartext (Вход с полномочиями (credentials), отправленными в виде простого текст. Часто обозначает вход в IIS с “базовой аутентификацией”)
+            9 — NewCredentials
+            10 — RemoteInteractive (Терминальные службы, Удаленный рабочий стол или удаленный помощник)
+            11 — CachedInteractive (вход с кешированными доменными полномочиями, например, вход на рабочую станцию, которая находится не в сети)
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -382,5 +407,7 @@ zabbix_export:
             - tag: Application
               value: 'Users Logs'
       tags:
+        - tag: Application
+          value: 'MS Event Logs'
         - tag: Application
           value: RDP
