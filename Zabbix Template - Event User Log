@@ -7,13 +7,15 @@ zabbix_export:
       name: 'Templates/Operating systems'
   templates:
     - uuid: 6f2eb975923a44deb0c2b5703800387d
-      template: 'MM Event User Log'
-      name: 'MM Event User Log'
+      template: 'MM Event User Log for AD DC'
+      name: 'MM Event User Log for AD DC'
       description: |
-        версия 0.4а
+        версия 0.9b
         7615053@gmail.com
         
         Этот шаблон создан преимущественно для AD DC но может использоваться на локальных ОС
+        
+        Схабрено https://habr.com/ru/companies/netwrix/articles/148501/
       groups:
         - name: Templates
         - name: 'Templates/Operating systems'
@@ -31,9 +33,10 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: c8ba1ebde675468bbff50bfa0b4c5db0
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^1102$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],,"1102")=1'
               name: 'Очистка журнала безопасности'
               priority: DISASTER
+              description: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],5s)=0'
               manual_close: 'YES'
         - uuid: d11c5a759a8f40c3a9f84c82e0f1a3e7
           name: 'Создан пользователь'
@@ -48,7 +51,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 830ed8f012754c7b85a7a12d70db4850
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4720$,,skip],,"4720")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4720$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4720$,,skip],,"4720")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4720$,,skip],15s)=0'
               name: 'Создан пользователь'
               priority: AVERAGE
               description: 'Обліковий запис користувача створено'
@@ -66,9 +69,9 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 502bcf6f174e415aa55f86005447f241
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4722$,,skip],,"4722")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4722$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4722$,,skip],,"4722")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4722$,,skip],15s)=0'
               name: 'Учетная запись пользователя включена'
-              priority: INFO
+              priority: WARNING
               description: 'Обліковий запис користувача включено'
               manual_close: 'YES'
         - uuid: 2c475fbaa3eb405caecd37304012e7e9
@@ -84,7 +87,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 7ac5029b6a63497c94d3bffcb5e004b0
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4724$,,skip],,"4724")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4724$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4724$,,skip],,"4724")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4724$,,skip],15s)=0'
               name: 'Пароль пользователя сброшен'
               priority: HIGH
               manual_close: 'YES'
@@ -101,7 +104,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: f46e5321c3ec45df838c9a636edf6f89
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4725$,,skip],,"4725")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4725$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4725$,,skip],,"4725")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4725$,,skip],5s)=0'
               name: 'Учетная запись пользователя отключена'
               priority: AVERAGE
               manual_close: 'YES'
@@ -118,7 +121,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 3276f24cb85a4ebfba34b3ad1824d3ac
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4726$,,skip],,"4726")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4726$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4726$,,skip],,"4726")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4726$,,skip],5s)=0'
               name: 'Удален пользователь'
               priority: HIGH
               description: 'Обліковий запис користувача видалено'
@@ -131,31 +134,33 @@ zabbix_export:
           history: 45d
           value_type: LOG
           trends: '0'
-          description: 'Событие 642/4738 указывает на изменения в указанной учетной записи, такие как сброс пароля или активация деактивированной до этого учетной записи. Описание события уточняется в соответствие с типом изменения.'
+          description: |
+            Событие 642/4738 указывает на изменения в указанной учетной записи, такие как сброс пароля или активация деактивированной до этого учетной записи. Описание события уточняется в соответствие с типом изменения.
+            ВНИМАНИЕ НА "Измененные атрибуты:" в детализации лога!
           tags:
             - tag: Application
               value: 'MS Event Logs'
           triggers:
             - uuid: 05e3aca78a1e40e69e033ef13a8addf3
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4738$,,skip],,"4738")=1'
-              name: 'Изменения в учетной записи - сброс пароля или активация деактивированной до этого учетной записи'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4738$,,skip],,"4738")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4738$,,skip],30)=0'
+              name: 'Произошли изменения в учетной записи'
               priority: AVERAGE
+              description: 'ВНИМАНИЕ на "Измененные атрибуты:"'
               manual_close: 'YES'
         - uuid: a35ab2b319074b9999a07a0ce747faee
-          name: 'Изменена политика домена'
+          name: 'Принудительный выход из системы по истечении времени входа в систему'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4739$,,skip]'
           delay: '300'
           history: 90d
           value_type: LOG
           trends: '0'
-          status: DISABLED
           tags:
             - tag: Application
               value: 'MS Event Logs'
           triggers:
             - uuid: 4ae8c40cb6ac443497bf38251219abfa
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4739$,,skip],,"4739")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4739$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4739$,,skip],,"4739")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4739$,,skip],15s)=0'
               name: 'Изменена политика домена'
               status: DISABLED
               priority: WARNING
@@ -174,7 +179,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: 4d15eefc0c3e4610893ae905add16925
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4740$,,skip],,"4740")=1'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4740$,,skip],,"4740")=1'
               name: 'Учетная запись была заблокирована после нескольких попыток входа'
               priority: HIGH
               description: |
@@ -195,7 +200,7 @@ zabbix_export:
               value: 'MS Event Logs'
           triggers:
             - uuid: c5f41ed1d405458b9d47a71bb26dc0e9
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4767$,,skip],,"4767")=1 and nodata(/MM Event User Log/eventlog[Security,,,,^4767$,,skip],5s)=0'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4767$,,skip],,"4767")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4767$,,skip],30s)=0'
               name: 'Учетная запись пользователя разблокирована'
               priority: AVERAGE
               manual_close: 'YES'
@@ -203,7 +208,7 @@ zabbix_export:
           name: 'Другие типы неудачной аутентификации'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4768$,,skip]'
-          delay: '300'
+          delay: '30'
           history: 365d
           value_type: LOG
           trends: '0'
@@ -227,9 +232,47 @@ zabbix_export:
             - tag: Application
               value: 'MS Event Logs'
           triggers:
+            - uuid: c8487047348745799fa8d3b0b5d14850
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x6")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],30s)=0'
+              name: '0x6'
+              event_name: 'Имя пользователя не существует'
+              priority: HIGH
+              description: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x6")=1 and'
+              manual_close: 'YES'
             - uuid: 320e6c49f24144749901523b0db4ae17
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4768$,,skip],,"4768")=1'
-              name: 'Неудачная аутентификация'
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x12")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],30s)=0'
+              name: '0x12'
+              event_name: 'Ограничение рабочей машины; ограничение времени входа в систему'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: 5f56fdba69fb483b9a3b2d4212a77954
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x18")=1'
+              name: '0x18'
+              event_name: 'Учетная запись деактивирована, заблокирована или истек срок ее действия'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: f0678eedaaf84fd78268f6404c3bcd37
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x23")=1'
+              name: '0x23'
+              event_name: 'Истек срок действия пароля пользователя'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: 7444e98b8e914144a9f5502728c062db
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x24")=1'
+              name: '0x24'
+              event_name: 'Предварительная аутентификация не удалась; обычно причиной является неверный пароль'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: 4186bee52814445c96723e1e3f9e0b68
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x32")=1'
+              name: '0x32'
+              event_name: 'Истек срок действия заявки. Это нормальное событие, которое логгируется учетными записями компьютеров'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: b43203288b2d4bb990e0f570c6e2fbb5
+              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x37")=1'
+              name: '0x37'
+              event_name: 'Время на рабочей машины давно не синхронизировалось со временем на контроллере домена'
               priority: HIGH
               manual_close: 'YES'
         - uuid: 0212ef44f7ba4a41ac82cc21fe44eadf
@@ -263,69 +306,129 @@ zabbix_export:
           preprocessing:
             - type: REGEX
               parameters:
-                - '0xC0000064'
+                - '(?i)0xC0000064'
                 - 'Такого имени пользователя не существует'
             - type: REGEX
               parameters:
-                - '0xC000006A '
+                - '(?i)0xC000006A '
                 - 'Верное имя пользователя, но неверный пароль'
             - type: REGEX
               parameters:
-                - '0xC0000234 '
+                - '(?i)0xC0000234 '
                 - 'Учетная запись пользователя заблокирована'
             - type: REGEX
               parameters:
-                - '0xC0000072 '
+                - '(?i)0xC0000072 '
                 - 'Учетная запись деактивирована'
             - type: REGEX
               parameters:
-                - '0xC000006F '
+                - '(?i)0xC000006F '
                 - 'Пользователь пытается войти в систему вне обозначенного периода времени (рабочего времени)'
             - type: REGEX
               parameters:
-                - '0xC0000070'
+                - '(?i)0xC0000070'
                 - 'Ограничение рабочей станции'
             - type: REGEX
               parameters:
-                - '0xC0000193'
+                - '(?i)0xC0000193'
                 - 'Истек срок действия учетной записи'
             - type: REGEX
               parameters:
-                - '0xC0000071'
+                - '(?i)0xC0000071'
                 - 'Истек срок действия пароля'
             - type: REGEX
               parameters:
-                - '0xC0000224'
+                - '(?i)0xC0000224'
                 - 'Пользователь должен поменять пароль при следующем входе в систему'
           tags:
             - tag: Application
               value: 'MS Event Logs'
           triggers:
             - uuid: a08b3db35f014590bce0a7307e8f0cce
-              expression: 'logeventid(/MM Event User Log/eventlog[Security,,,,^4776$,,skip],,"4776")=1'
-              name: 'Неудачная попытка входа в систему через NTLM с доменной учетной записью'
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC000006A")=1'
+              name: '0xC000006A'
+              event_name: 'Верное имя пользователя, но неверный пароль'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: 1727fe7e74bd4e63acd93dbdb70dc8d1
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000064")=1'
+              name: '0xC0000064'
+              event_name: 'Такого имени пользователя не существует'
+              priority: DISASTER
+              manual_close: 'YES'
+            - uuid: be0557c18e0a4af2a9f14131aedcfa94
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000070")=1'
+              name: '0xC0000070'
+              event_name: 'Ограничение рабочей станции'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: c75762390d3240c38248d195a2092967
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000071")=1'
+              name: '0xC0000071'
+              event_name: 'Истек срок действия пароля'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: 229342dc511f49a19e0f2928bc1db451
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000072")=1'
+              name: '0xC0000072'
+              event_name: 'Учетная запись деактивирована'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: 105e4e61dc0d4ddcbf09a24d1fbcc033
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000193")=1'
+              name: '0xC0000193'
+              event_name: 'Истек срок действия учетной записи'
+              priority: HIGH
+              manual_close: 'YES'
+            - uuid: 3b2fe4b4183f44ac9a0935e496129c64
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000224")=1'
+              name: '0xC0000224'
+              event_name: 'Пользователь должен поменять пароль при следующем входе в систему'
+              priority: WARNING
+              manual_close: 'YES'
+            - uuid: a17fe5fe55634a65b6f51782bc7bd035
+              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000234")=1'
+              name: '0xC0000234'
+              event_name: 'Учетная запись пользователя заблокирована'
               priority: HIGH
               manual_close: 'YES'
       tags:
         - tag: Application
           value: 'MS Event Logs'
       valuemaps:
+        - uuid: 883b208997564e259b057fcefac66dbc
+          name: 'Коды отказов Kerberos'
+          mappings:
+            - value: '(?i)0x6'
+              newvalue: 'Имя пользователя не существует'
+            - value: '(?i)0x12'
+              newvalue: 'Ограничение рабочей машины; ограничение времени входа в систему'
+            - value: '(?i)0x18'
+              newvalue: 'Учетная запись деактивирована, заблокирована или истек срок ее д'
+            - value: '(?i)0x23'
+              newvalue: 'Истек срок действия пароля пользователя'
+            - value: '(?i)0x24'
+              newvalue: 'Предварительная аутентификация не удалась; обычно причиной являе'
+            - value: '(?i)0x32'
+              newvalue: 'Истек срок действия заявки. Это нормальное событие, которое логг'
+            - value: '(?i)0x37'
+              newvalue: 'Время на рабочей машины давно не синхронизировалось со временем'
         - uuid: 0c8545dbb02d46fc99f21ae281c4e906
           name: 'Коды ошибок NTLM'
           mappings:
-            - value: '0xC0000064'
+            - value: '(?i)0xC0000064'
               newvalue: 'Такого имени пользователя не существует'
-            - value: '0xC0000234'
+            - value: '(?i)0xC0000234'
               newvalue: 'Учетная запись пользователя заблокирована'
-            - value: '0xC0000072'
+            - value: '(?i)0xC0000072'
               newvalue: 'Учетная запись деактивирована'
-            - value: '0xC000006F'
+            - value: '(?i)0xC000006F'
               newvalue: 'Пользователь пытается войти в систему вне обозначенного периода'
-            - value: '0xC0000070'
+            - value: '(?i)0xC0000070'
               newvalue: 'Ограничение рабочей станции'
-            - value: '0xC0000193'
+            - value: '(?i)0xC0000193'
               newvalue: 'Истек срок действия учетной записи'
-            - value: '0xC0000071'
+            - value: '(?i)0xC0000071'
               newvalue: 'Истек срок действия пароля'
-            - value: '0xC0000224'
+            - value: '(?i)0xC0000224'
               newvalue: 'Пользователь должен поменять пароль при следующем входе в систе'
