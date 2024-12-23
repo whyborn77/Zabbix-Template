@@ -7,15 +7,16 @@ zabbix_export:
       name: 'Templates/Operating systems'
   templates:
     - uuid: 6f2eb975923a44deb0c2b5703800387d
-      template: 'MM Event User Log for AD DC'
-      name: 'MM Event User Log for AD DC'
+      template: 'Microsoft EventLog for AD DC'
+      name: 'Microsoft EventLog for AD DC'
       description: |
-        версия 0.91b
+        версия 0.93b
         7615053@gmail.com
         
         Этот шаблон создан преимущественно для AD DC но может использоваться на локальных ОС
         
         Схабрено https://habr.com/ru/companies/netwrix/articles/148501/
+        Так же использована информации из шаблона  https://github.com/NikonovAleksei/zabbix
       groups:
         - name: Templates
         - name: 'Templates/Operating systems'
@@ -24,20 +25,237 @@ zabbix_export:
           name: 'Очистка журнала безопасности'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^1102$,,skip]'
-          delay: '300'
+          delay: '30'
           history: 90d
           value_type: LOG
           trends: '0'
+          description: |
+            ID1102
+            The audit log was cleared
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: c8ba1ebde675468bbff50bfa0b4c5db0
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],,"1102")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^1102$,,skip],,"1102")=1'
               name: 'Очистка журнала безопасности'
               priority: DISASTER
               description: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^1102$,,skip],5s)=0'
               manual_close: 'YES'
+        - uuid: a701a00a6df5445ebb025dbbcc73c4b2
+          name: 'Произошла отслеживаемая последовательность событий безопасности'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4618$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: 'A monitored security event pattern has occurred.'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 072d7db34f8b46d68971d3b72ff7ba3f
+          name: 'Администратор восстановил систему из CrashOnAuditFail'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4621$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4621)
+            Администратор восстановил систему из CrashOnAuditFail. Пользователям, не являющимся администраторами, теперь разрешено выполнять вход. Возможно, некоторые операции, поддерживающие аудит, не были записаны.
+            
+            Administrator recovered system from CrashOnAuditFail. Users who are not administrators will now be allowed to log on. Some auditable activity might not have been recorded.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 9051146cf5e34dfb8125f5ce59b62e84
+          name: 'Обнаружена атака повторного воспроизведения'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4649$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4649)
+            A replay attack was detected. May be a harmless false positive due to misconfiguration error.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 9503376410884d13b075320756c9c7d5
+              expression: 'last(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4649$,,skip])=1'
+              name: 'id 4649'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: 847dee926c8b4f8ca874e03075f9ca86
+          name: 'Идентификаторы безопасности отфильтрованы'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4675$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4675)
+            Идентификаторы безопасности отфильтрованы. Рекомендуемое состояние для этого параметра — "Success and Failure" ("Успешное завершение и сбой").
+            SIDs were filtered.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 83c557e1f08341a19e9c32498413eaed
+          name: 'Была предпринята попытка создания резервной копии главного ключа защиты данных'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4692$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4692)
+            
+            Backup of data protection master key was attempted.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: dbf117f034a6465e9c01eb007afa50cd
+          name: 'Была предпринята попытка восстановления ключа защиты данных'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4693$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4693)
+            Recovery of data protection master key was attempted.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 05ab4fc8f044409cb6cd1bd6462c03f2
+          name: 'Для домена было создано новое отношение доверия'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4706$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4706)
+            A new trust was created to a domain.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 847c3a35953f49bf9b40294d719e5df3
+          name: 'Политика Kerberos была изменена'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4713$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4713)
+            Kerberos policy was changed.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 754382e763f44cd38a24c4f9ce1c1a40
+              expression: 'last(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4713$,,skip])=1'
+              name: 'Политика Kerberos была изменена'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: 2a8d602e3f19404d944ca370612ffbc3
+          name: 'Изменена политика восстановления зашифрованных данных'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4714$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4714)
+            Encrypted data recovery policy was changed.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: e860041d42544d1ea83e280f8fe3b220
+          name: 'Политика аудита (SACL) для объекта была изменена'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4715$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4715)
+            The audit policy (SACL) on an object was changed.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 2044a051177b4b4395c6c21ed0055897
+          name: 'Сведения о доверенном домене были изменены'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4716$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4716)
+            Trusted domain information was modified.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 6bb520c84f24475b8a5190cd1118072e
+              expression: 'last(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4716$,,skip])=1'
+              name: 'Сведения о доверенном домене были изменены'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: 159a4674da8f409d8a8099550d78e95a
+          name: 'Политика аудита системы была изменена'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4719$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4719)
+            System audit policy was changed.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
         - uuid: d11c5a759a8f40c3a9f84c82e0f1a3e7
           name: 'Создан пользователь'
           type: ZABBIX_ACTIVE
@@ -49,9 +267,11 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 830ed8f012754c7b85a7a12d70db4850
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4720$,,skip],,"4720")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4720$,,skip],15s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4720$,,skip],,"4720")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4720$,,skip],15s)=0'
               name: 'Создан пользователь'
               priority: AVERAGE
               description: 'Обліковий запис користувача створено'
@@ -67,12 +287,34 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 502bcf6f174e415aa55f86005447f241
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4722$,,skip],,"4722")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4722$,,skip],15s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4722$,,skip],,"4722")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4722$,,skip],15s)=0'
               name: 'Учетная запись пользователя включена'
               priority: WARNING
               description: 'Обліковий запис користувача включено'
+              manual_close: 'YES'
+        - uuid: 74bcda7a3a694bd0827dc41f0b12216b
+          name: 'Предпринята попытка изменить пароль учетной записи'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4723$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 766e4a2f6d8e45568f28267792179211
+              expression: 'last(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4723$,,skip])=1'
+              name: '4723'
+              event_name: 'предпринята попытка изменить пароль учетной записи'
+              priority: HIGH
               manual_close: 'YES'
         - uuid: 2c475fbaa3eb405caecd37304012e7e9
           name: 'Пароль пользователя сброшен'
@@ -85,9 +327,11 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 7ac5029b6a63497c94d3bffcb5e004b0
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4724$,,skip],,"4724")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4724$,,skip],15s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4724$,,skip],,"4724")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4724$,,skip],15m)=0'
               name: 'Пароль пользователя сброшен'
               priority: HIGH
               manual_close: 'YES'
@@ -102,9 +346,11 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: f46e5321c3ec45df838c9a636edf6f89
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4725$,,skip],,"4725")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4725$,,skip],5s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4725$,,skip],,"4725")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4725$,,skip],15m)=0'
               name: 'Учетная запись пользователя отключена'
               priority: AVERAGE
               manual_close: 'YES'
@@ -119,15 +365,17 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 3276f24cb85a4ebfba34b3ad1824d3ac
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4726$,,skip],,"4726")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4726$,,skip],5s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4726$,,skip],,"4726")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4726$,,skip],5s)=0'
               name: 'Удален пользователь'
               priority: HIGH
               description: 'Обліковий запис користувача видалено'
               manual_close: 'YES'
         - uuid: 008c7ae4c93444a381d567430cbbb0b0
-          name: 'Учетная запись - сбос пароля или вкл\выкл'
+          name: 'Учетная запись была изменена (в т.ч. сброс пароля)'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4738$,,skip]'
           delay: '300'
@@ -140,9 +388,11 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 05e3aca78a1e40e69e033ef13a8addf3
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4738$,,skip],,"4738")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4738$,,skip],30)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4738$,,skip],,"4738")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4738$,,skip],1h)=0'
               name: 'Произошли изменения в учетной записи'
               priority: AVERAGE
               description: 'ВНИМАНИЕ на "Измененные атрибуты:"'
@@ -158,9 +408,11 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 4ae8c40cb6ac443497bf38251219abfa
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4739$,,skip],,"4739")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4739$,,skip],15s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4739$,,skip],,"4739")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4739$,,skip],15s)=0'
               name: 'Изменена политика домена'
               status: DISABLED
               priority: WARNING
@@ -169,17 +421,21 @@ zabbix_export:
           name: 'Учетная запись указанного пользователя была заблокирована после нескольких попыток входа'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4740$,,skip]'
-          delay: '300'
+          delay: '60'
           history: 45d
           value_type: LOG
           trends: '0'
-          description: 'Учетная запись указанного пользователя была заблокирована после нескольких попыток входа'
+          description: |
+            Учетная запись указанного пользователя была заблокирована после нескольких попыток входа
+            A user account was locked out
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: 4d15eefc0c3e4610893ae905add16925
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4740$,,skip],,"4740")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4740$,,skip],,"4740")=1'
               name: 'Учетная запись была заблокирована после нескольких попыток входа'
               priority: HIGH
               description: |
@@ -187,20 +443,93 @@ zabbix_export:
                 (Аудит управления учетными записями)
                 Учетная запись указанного пользователя была заблокирована после нескольких попыток входа
               manual_close: 'YES'
-        - uuid: b28e61a2781a471e94e92ca0ecd56406
-          name: 'Учетная запись пользователя разблокирована'
+        - uuid: b08e5d375c2b4e7d89831f47b3662670
+          name: 'Была создана учетная запись компьютера'
           type: ZABBIX_ACTIVE
-          key: 'eventlog[Security,,,,^4767$,,skip]'
+          key: 'eventlog[Security,,,,^4741$,,skip]'
           delay: '300'
+          history: 45d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: e9b1ea1eb44d48f0a6fc628b09d933fd
+          name: 'Учетная запись компьютера была изменена'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4742$,,skip]'
+          delay: '60'
           history: 365d
           value_type: LOG
           trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 73e9d77ff745430da53ac7ac194a9be1
+          name: 'Удалена учетная запись компьютера'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4743$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: bcacf5bf480c4e52a16669ce3953e9f3
+          name: 'Журнал SID был добавлен в учетную запись'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4765$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4765)
+            SID History was added to an account.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: e47dea1423504fcf9edc8db979c67ac3
+          name: 'Ошибка при добавлении журнала SID в учетную запись'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4766$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4766)
+            An attempt to add SID History to an account failed.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: b28e61a2781a471e94e92ca0ecd56406
+          name: 'Учетная запись пользователя разблокирована'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4767$,,skip]'
+          delay: '60'
+          history: 365d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: c5f41ed1d405458b9d47a71bb26dc0e9
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4767$,,skip],,"4767")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4767$,,skip],30s)=0'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4767$,,skip],,"4767")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4767$,,skip],30s)=0'
               name: 'Учетная запись пользователя разблокирована'
               priority: AVERAGE
               manual_close: 'YES'
@@ -208,7 +537,7 @@ zabbix_export:
           name: 'Другие типы неудачной аутентификации'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^4768$,,skip]'
-          delay: '30'
+          delay: '120'
           history: 365d
           value_type: LOG
           trends: '0'
@@ -231,46 +560,48 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: c8487047348745799fa8d3b0b5d14850
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x6")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],30s)=0'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x6")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],5m)=0'
               name: '0x6'
               event_name: 'Имя пользователя не существует'
               priority: HIGH
               description: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x6")=1 and'
               manual_close: 'YES'
             - uuid: 320e6c49f24144749901523b0db4ae17
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x12")=1 and nodata(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],30s)=0'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x12")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],1h)=0'
               name: '0x12'
               event_name: 'Ограничение рабочей машины; ограничение времени входа в систему'
               priority: AVERAGE
               manual_close: 'YES'
             - uuid: 5f56fdba69fb483b9a3b2d4212a77954
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x18")=1'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x18")=1'
               name: '0x18'
               event_name: 'Учетная запись деактивирована, заблокирована или истек срок ее действия'
               priority: HIGH
               manual_close: 'YES'
             - uuid: f0678eedaaf84fd78268f6404c3bcd37
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x23")=1'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x23")=1'
               name: '0x23'
               event_name: 'Истек срок действия пароля пользователя'
               priority: HIGH
               manual_close: 'YES'
             - uuid: 7444e98b8e914144a9f5502728c062db
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x24")=1'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x24")=1'
               name: '0x24'
               event_name: 'Предварительная аутентификация не удалась; обычно причиной является неверный пароль'
               priority: HIGH
               manual_close: 'YES'
             - uuid: 4186bee52814445c96723e1e3f9e0b68
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x32")=1'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x32")=1'
               name: '0x32'
               event_name: 'Истек срок действия заявки. Это нормальное событие, которое логгируется учетными записями компьютеров'
               priority: HIGH
               manual_close: 'YES'
             - uuid: b43203288b2d4bb990e0f570c6e2fbb5
-              expression: 'find(/MM Event User Log for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x37")=1'
+              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x37")=1'
               name: '0x37'
               event_name: 'Время на рабочей машины давно не синхронизировалось со временем на контроллере домена'
               priority: HIGH
@@ -343,55 +674,158 @@ zabbix_export:
           tags:
             - tag: Application
               value: 'MS Event Logs'
+            - tag: Application
+              value: Security
           triggers:
             - uuid: a08b3db35f014590bce0a7307e8f0cce
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC000006A")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC000006A")=1'
               name: '0xC000006A'
               event_name: 'Верное имя пользователя, но неверный пароль'
               priority: AVERAGE
               manual_close: 'YES'
             - uuid: 1727fe7e74bd4e63acd93dbdb70dc8d1
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000064")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000064")=1'
               name: '0xC0000064'
               event_name: 'Такого имени пользователя не существует'
               priority: DISASTER
               manual_close: 'YES'
             - uuid: be0557c18e0a4af2a9f14131aedcfa94
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000070")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000070")=1'
               name: '0xC0000070'
               event_name: 'Ограничение рабочей станции'
               priority: AVERAGE
               manual_close: 'YES'
             - uuid: c75762390d3240c38248d195a2092967
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000071")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000071")=1'
               name: '0xC0000071'
               event_name: 'Истек срок действия пароля'
               priority: AVERAGE
               manual_close: 'YES'
             - uuid: 229342dc511f49a19e0f2928bc1db451
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000072")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000072")=1'
               name: '0xC0000072'
               event_name: 'Учетная запись деактивирована'
               priority: HIGH
               manual_close: 'YES'
             - uuid: 105e4e61dc0d4ddcbf09a24d1fbcc033
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000193")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000193")=1'
               name: '0xC0000193'
               event_name: 'Истек срок действия учетной записи'
               priority: HIGH
               manual_close: 'YES'
             - uuid: 3b2fe4b4183f44ac9a0935e496129c64
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000224")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000224")=1'
               name: '0xC0000224'
               event_name: 'Пользователь должен поменять пароль при следующем входе в систему'
               priority: WARNING
               manual_close: 'YES'
             - uuid: a17fe5fe55634a65b6f51782bc7bd035
-              expression: 'logeventid(/MM Event User Log for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000234")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4776$,,skip],,"0xC0000234")=1'
               name: '0xC0000234'
               event_name: 'Учетная запись пользователя заблокирована'
               priority: HIGH
               manual_close: 'YES'
+        - uuid: 950c124867aa4a6bb73e52d8de47c09c
+          name: 'Список ACL был задан для учетных записей, входящих в группы администраторов'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4780$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: a1f5e3fa0b524d699244a5da0743c5da
+          name: 'Имя учетной записи изменено'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4781$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 058ce5a64ed3475981b6d1eabee57d51
+          name: 'Была предпринята попытка установить режим восстановления служб каталогов'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4794$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4794)
+            An attempt was made to set the Directory Services Restore Mode.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 2ba19c6ea3aa40c9859ee0bf8d80014b
+          name: 'Разделение ролей включено'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4897$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4897)
+            Certification Services
+            Role separation enabled.
+            
+            Это событие регистрируется всякий раз, когда запускается CS и когда разделение ролей фактически изменяется.
+            
+            Разделение ролей — это форма управления «разделением обязанностей», которую вы можете опционально включить в своем Центре сертификации, чтобы гарантировать, что компрометация учетной записи пользователя — или переход пользователя в «мошенническое состояние» — не повлияет на весь центр сертификации, администрируемый пользователем
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 32c6fae80de8434696b14f9e2623e492
+          name: 'Для нового входа были назначены специальные группы'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4964$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID4964)
+            Special groups have been assigned to a new logon.
+            
+            Для создания этого события необходимо сначала настроить аудит для SpecialGroups. См. Событие 4908 для настройки.
+            
+            Новая функция для Vista и Win2008, аудит специальных групп, позволяет администратору узнать, когда член определенной группы входит в систему. Когда администратор устанавливает список идентификаторов безопасности групп (SID) в реестре, любой в специальной группе будет создавать это событие при входе в систему.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: 07f057535456456ea8ec71044e7e6606
+          name: 'Обновлены настройки безопасности в службе OCSP Responder.'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^5124$,,skip]'
+          delay: 15m
+          history: 1w
+          value_type: LOG
+          trends: '0'
+          description: |
+            Windows Security (ID5124)
+            A security setting was updated on the OCSP Responder Service.
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
       tags:
         - tag: Application
           value: 'MS Event Logs'
+        - tag: Application
+          value: Security
