@@ -1,6 +1,8 @@
 zabbix_export:
-  version: '7.0'
+  version: '7.4'
   template_groups:
+    - uuid: 10e5a7a768ba462a9f055f809463b743
+      name: 'MIASSMOBILI template'
     - uuid: 7df96b18c230490a9a0a9e2307226338
       name: Templates
     - uuid: 846977d1dfed4968bc5f8bdb363285bc
@@ -10,7 +12,7 @@ zabbix_export:
       template: 'Microsoft EventLog for AD DC'
       name: 'Microsoft EventLog for AD DC'
       description: |
-        версия 0.93b
+        версия 0.95b
         7615053@gmail.com
         
         Этот шаблон создан преимущественно для AD DC но может использоваться на локальных ОС
@@ -18,6 +20,7 @@ zabbix_export:
         Схабрено https://habr.com/ru/companies/netwrix/articles/148501/
         Так же использована информации из шаблона  https://github.com/NikonovAleksei/zabbix
       groups:
+        - name: 'MIASSMOBILI template'
         - name: Templates
         - name: 'Templates/Operating systems'
       items:
@@ -25,10 +28,8 @@ zabbix_export:
           name: 'Очистка журнала безопасности'
           type: ZABBIX_ACTIVE
           key: 'eventlog[Security,,,,^1102$,,skip]'
-          delay: '30'
           history: 90d
           value_type: LOG
-          trends: '0'
           description: |
             ID1102
             The audit log was cleared
@@ -51,7 +52,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: 'A monitored security event pattern has occurred.'
           tags:
             - tag: Application
@@ -65,7 +65,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4621)
             Администратор восстановил систему из CrashOnAuditFail. Пользователям, не являющимся администраторами, теперь разрешено выполнять вход. Возможно, некоторые операции, поддерживающие аудит, не были записаны.
@@ -83,7 +82,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4649)
             A replay attack was detected. May be a harmless false positive due to misconfiguration error.
@@ -98,6 +96,54 @@ zabbix_export:
               name: 'id 4649'
               priority: HIGH
               manual_close: 'YES'
+        - uuid: 64c241468ef345989dac67a35d7bc012
+          name: 'GPO - Попытка доступа к объекту'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4656$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 4656 — Попытка доступа к объекту. Показывает запрошенные права.
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 840cba7e4d9342f48861073cd083a8a6
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4656$,,skip],,4656)=1'
+              name: 'Попытка доступа к объекту'
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 99d10a211faf4d3f9955aa9adb44a20e
+          name: 'GPO - Доступ к объекту был попыткой чтения/изменения файла/папки'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4663$,,skip]'
+          delay: 10m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 4663 — Доступ к объекту был попыткой чтения/изменения файла/папки. (нужно отдельно настраивать аудит файлов).
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 4290b7a683ad48b2a8f99e523c13c290
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4663$,,skip],,4663)=1'
+              name: 'Доступ к объекту был попыткой чтения/изменения'
+              priority: AVERAGE
+              manual_close: 'YES'
         - uuid: 847dee926c8b4f8ca874e03075f9ca86
           name: 'Идентификаторы безопасности отфильтрованы'
           type: ZABBIX_ACTIVE
@@ -105,7 +151,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4675)
             Идентификаторы безопасности отфильтрованы. Рекомендуемое состояние для этого параметра — "Success and Failure" ("Успешное завершение и сбой").
@@ -122,7 +167,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4692)
             
@@ -139,7 +183,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4693)
             Recovery of data protection master key was attempted.
@@ -155,7 +198,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4706)
             A new trust was created to a domain.
@@ -171,7 +213,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4713)
             Kerberos policy was changed.
@@ -193,7 +234,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4714)
             Encrypted data recovery policy was changed.
@@ -209,7 +249,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4715)
             The audit policy (SACL) on an object was changed.
@@ -225,7 +264,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4716)
             Trusted domain information was modified.
@@ -247,10 +285,12 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4719)
             System audit policy was changed.
+            
+            Журнал "Security"
+            Изменение настроек аудита безопасности через политику.
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -263,7 +303,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -283,7 +322,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -303,7 +341,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -311,7 +348,7 @@ zabbix_export:
               value: Security
           triggers:
             - uuid: 766e4a2f6d8e45568f28267792179211
-              expression: 'last(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4723$,,skip])=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4723$,,skip])=1'
               name: '4723'
               event_name: 'предпринята попытка изменить пароль учетной записи'
               priority: HIGH
@@ -323,7 +360,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -342,7 +378,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -361,7 +396,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -381,7 +415,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           description: |
             Событие 642/4738 указывает на изменения в указанной учетной записи, такие как сброс пароля или активация деактивированной до этого учетной записи. Описание события уточняется в соответствие с типом изменения.
             ВНИМАНИЕ НА "Измененные атрибуты:" в детализации лога!
@@ -404,7 +437,10 @@ zabbix_export:
           delay: '300'
           history: 90d
           value_type: LOG
-          trends: '0'
+          description: |
+            Журнал "Security"
+            ID 4739 — Изменение настроек политики домена (например, парольных 
+            политик).
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -424,7 +460,6 @@ zabbix_export:
           delay: '60'
           history: 45d
           value_type: LOG
-          trends: '0'
           description: |
             Учетная запись указанного пользователя была заблокирована после нескольких попыток входа
             A user account was locked out
@@ -435,7 +470,7 @@ zabbix_export:
               value: Security
           triggers:
             - uuid: 4d15eefc0c3e4610893ae905add16925
-              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4740$,,skip],,"4740")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4740$,,skip],,"4740")=1 and nodata(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4740$,,skip],15m)=0'
               name: 'Учетная запись была заблокирована после нескольких попыток входа'
               priority: HIGH
               description: |
@@ -450,7 +485,6 @@ zabbix_export:
           delay: '300'
           history: 45d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -463,7 +497,6 @@ zabbix_export:
           delay: '60'
           history: 365d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -476,7 +509,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -489,7 +521,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4765)
             SID History was added to an account.
@@ -505,7 +536,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4766)
             An attempt to add SID History to an account failed.
@@ -521,7 +551,6 @@ zabbix_export:
           delay: '60'
           history: 365d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -540,7 +569,6 @@ zabbix_export:
           delay: '120'
           history: 365d
           value_type: LOG
-          trends: '0'
           description: |
             (Аудит событий входа в систему)
             Событие 676/4768 логгируется для других типов неудачной аутентификации. Таблица кодов Kerberos приведена ниже.
@@ -597,11 +625,12 @@ zabbix_export:
             - uuid: 4186bee52814445c96723e1e3f9e0b68
               expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x32")=1'
               name: '0x32'
-              event_name: 'Истек срок действия заявки. Это нормальное событие, которое логгируется учетными записями компьютеров'
-              priority: HIGH
+              event_name: 'Истек срок действия заявки.'
+              priority: WARNING
+              description: 'Это нормальное событие, которое логгируется учетными записями компьютеров'
               manual_close: 'YES'
             - uuid: b43203288b2d4bb990e0f570c6e2fbb5
-              expression: 'find(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,,"0x37")=1'
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4768$,,skip],,"0x37")=1'
               name: '0x37'
               event_name: 'Время на рабочей машины давно не синхронизировалось со временем на контроллере домена'
               priority: HIGH
@@ -613,7 +642,6 @@ zabbix_export:
           delay: '300'
           history: 365d
           value_type: LOG
-          trends: '0'
           description: |
             (Аудит событий входа в систему)
             Событие 681/4776 на контроллере домена указывает на неудачную попытку входа в систему через
@@ -732,7 +760,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -745,7 +772,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -758,7 +784,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4794)
             An attempt was made to set the Directory Services Restore Mode.
@@ -774,7 +799,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4897)
             Certification Services
@@ -788,6 +812,53 @@ zabbix_export:
               value: 'MS Event Logs'
             - tag: Application
               value: Security
+        - uuid: cde905846cdc48d1b72ed3b79af2d67d
+          name: 'GPO -  Изменение политики безопасности на компьютере'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4902$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 4902 — Изменение политики безопасности на компьютере (в том числе через GPO).
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: fbf17bbe033448c9b621c08bbab90ec6
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4902$,,skip],,4902)=1'
+              name: 'Изменение политики безопасности на компьютере (в том числе через GPO).'
+              priority: HIGH
+        - uuid: 94ad387c0819496bb1c86302791e29bf
+          name: 'GPO - Аудит был отключен на объекте!'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4907$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 4907— Аудит был отключен на объекте. Возможный признак нарушения безопасности.
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 7cb0e533d0c94c639f133f7905a01bca
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^4907$,,skip],,"4907")=1'
+              name: 'Аудит был отключен на объекте. Признак нарушения безопасности.'
+              priority: DISASTER
+              manual_close: 'YES'
         - uuid: 32c6fae80de8434696b14f9e2623e492
           name: 'Для нового входа были назначены специальные группы'
           type: ZABBIX_ACTIVE
@@ -795,7 +866,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID4964)
             Special groups have been assigned to a new logon.
@@ -815,7 +885,6 @@ zabbix_export:
           delay: 15m
           history: 1w
           value_type: LOG
-          trends: '0'
           description: |
             Windows Security (ID5124)
             A security setting was updated on the OCSP Responder Service.
@@ -824,6 +893,73 @@ zabbix_export:
               value: 'MS Event Logs'
             - tag: Application
               value: Security
+        - uuid: 59de266467bf4bef946c242c70f58cfd
+          name: 'GPO - Объект был изменен (детали)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^5136$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 5136 — Объект был изменен (в том числе GPO). Показывает кто, когда и что поменял.
+            
+            Журнал "Security" на контроллере домена
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 74d3e2fa54a34ecda12e80137ce12deb
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^5136$,,skip],,5136)=1'
+              name: 'Объект был изменен (в т.ч.GPO)'
+              priority: AVERAGE
+              description: 'Показывает кто, когда и что поменял.'
+              manual_close: 'YES'
+        - uuid: f9650c70336b4bc597d80d73ea7e8635
+          name: 'GPO - Создание нового объекта'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^5137$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 5137 — Создание нового объекта
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+        - uuid: c6e37ece1b214a168bd61f42b70d5632
+          name: 'GPO - Удаление объекта'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^5141$,,skip]'
+          delay: 5m
+          history: 90d
+          value_type: LOG
+          description: |
+            ID 5141 — Удаление объекта
+            
+            Журнал "Security"
+          tags:
+            - tag: Application
+              value: GPO
+            - tag: Application
+              value: 'MS Event Logs'
+            - tag: Application
+              value: Security
+          triggers:
+            - uuid: 4b010bf09d16476db8b2297e1196925a
+              expression: 'logeventid(/Microsoft EventLog for AD DC/eventlog[Security,,,,^5141$,,skip],,5141)=1'
+              name: Удаление
+              priority: HIGH
+              manual_close: 'YES'
       tags:
         - tag: Application
           value: 'MS Event Logs'
