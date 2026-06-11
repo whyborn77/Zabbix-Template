@@ -1,20 +1,23 @@
 zabbix_export:
-  version: '7.0'
+  version: '7.4'
   template_groups:
+    - uuid: 10e5a7a768ba462a9f055f809463b743
+      name: 'whyborn template'
     - uuid: 7df96b18c230490a9a0a9e2307226338
       name: Templates
     - uuid: 846977d1dfed4968bc5f8bdb363285bc
       name: 'Templates/Operating systems'
   templates:
     - uuid: a43583279d1742409c7a13584e3c104f
-      template: 'Microsoft Eventlog ms windows'
-      name: 'Microsoft Eventlog ms windows'
+      template: 'whyborn Microsoft Eventlog ms windows'
+      name: 'whyborn Microsoft Eventlog ms windows'
       description: |
         version. 0.93a
         7615053@gmail.com
         
         Этот шаблон создан преимущественно для локальных ПК с целью выявления сбоев из-за некорректности действия пользователя
       groups:
+        - name: 'whyborn template'
         - name: Templates
         - name: 'Templates/Operating systems'
       items:
@@ -25,7 +28,6 @@ zabbix_export:
           delay: 15m
           history: 180d
           value_type: LOG
-          trends: '0'
           description: 'системе недостаточно виртуальной памяти'
           tags:
             - tag: Application
@@ -34,7 +36,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 71b2e78c20b14b02a9f5d0450a8161e8
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,skip],,"1003")=1'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[Microsoft-Windows-Resource-Exhaustion-Detector/Operational,,,,^1003$,,skip],,"1003")=1'
               name: 'Нехватка системных ресурсов Windows swap'
               priority: HIGH
               manual_close: 'YES'
@@ -45,16 +47,51 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
           triggers:
             - uuid: 148b973f07d0473a8683a44778d80479
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/Microsoft Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],5s)=0'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],,"1102")=1 and nodata(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^1102$,,skip],5s)=0'
               name: 'Очистка журнала безопасности'
               priority: HIGH
               manual_close: 'YES'
+        - uuid: 2b917834c87148c6b792153e670eba44
+          name: 'Событие удаления из сетевой папки'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4659$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          description: |
+            https://winitpro.ru/index.php/2016/05/04/prostaya-sistema-audita-udaleniya-fajlov-i-papok-dlya-windows-server/
+            @eve
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+          triggers:
+            - uuid: b0ebb363ce1b4810a39e646fe1ec62a2
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^4659$,,skip])=4659 and nodata(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^4659$,,skip],15)=0'
+              name: '4659'
+              priority: WARNING
+        - uuid: 8fed832809e746f69c322eaf3a24e6c0
+          name: 'Событие удаления из локальной папки'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Security,,,,^4663$,,skip]'
+          delay: 15m
+          history: 90d
+          value_type: LOG
+          description: |
+            https://winitpro.ru/index.php/2016/05/04/prostaya-sistema-audita-udaleniya-fajlov-i-papok-dlya-windows-server/
+            @eve
+          tags:
+            - tag: Application
+              value: 'MS Event Logs'
+          triggers:
+            - uuid: 4cc11b66f9774a1a9a0d6ae77605c436
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^4663$,,skip])=4663 and nodata(/whyborn Microsoft Eventlog ms windows/eventlog[Security,,,,^4663$,,skip],15)=0'
+              name: '4663'
+              priority: WARNING
         - uuid: d5f6a3d2348a4ec895a973eec9b31fdd
           name: 'Система перезагрузилась без предварительного завершения работы'
           type: ZABBIX_ACTIVE
@@ -62,7 +99,6 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           description: |
             Event ID: 41  
             Description: The system has rebooted without cleanly shutting down first.
@@ -73,7 +109,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: cf83253b990b4401a17b4c391f65ac1f
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],,"41")=1 and nodata(/Microsoft Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],5s)=0'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],,"41")=1 and nodata(/whyborn Microsoft Eventlog ms windows/eventlog[System,,"Error",,^41$,,skip],5s)=0'
               name: 'Система перезагрузилась, не завершив полностью работу.'
               priority: HIGH
               manual_close: 'YES'
@@ -84,7 +120,6 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           description: 'eventlog[System,,"Error",,^(55)$,,]'
           tags:
             - tag: Application
@@ -93,7 +128,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 09194f43a5e44c1a9048871704afbc2b
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[System,,"Error",,^55$,,skip],,55)=1'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[System,,"Error",,^55$,,skip],,55)=1'
               recovery_mode: NONE
               name: 'NTFS errors'
               priority: HIGH
@@ -105,7 +140,6 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           description: |
             Event Type: Error
             Event Source: NTFS
@@ -119,7 +153,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: a548657a2708480e8c75bde345c5b35f
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[System,,"Error",,^98$,,skip],,"98")=1'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[System,,"Error",,^98$,,skip],,"98")=1'
               recovery_mode: NONE
               name: 'Volume needs to be taken offline to perform a full chkdsk'
               event_name: 'Структура файловой системы на диске повреждена'
@@ -133,7 +167,6 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           description: 'Event ID 1074: System has been shutdown by a process/user.'
           tags:
             - tag: Application
@@ -142,7 +175,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: 192a7b5b705b47128a8ad680d500db57
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[System,,,,^1074$,,skip],,1074)=1'
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[System,,,,^1074$,,skip],,1074)=1'
               recovery_mode: NONE
               name: 'Система была выключена процессом/пользователем'
               priority: INFO
@@ -154,7 +187,6 @@ zabbix_export:
           delay: 15m
           history: 90d
           value_type: LOG
-          trends: '0'
           tags:
             - tag: Application
               value: 'MS Event Logs'
@@ -162,8 +194,7 @@ zabbix_export:
               value: 'Users Logs'
           triggers:
             - uuid: e77d712fdede43b6b830c46931978d8a
-              expression: 'logeventid(/Microsoft Eventlog ms windows/eventlog[System,,,,^6008$,,skip],,6008)=1 and nodata(/Microsoft Eventlog ms windows/eventlog[System,,,,^6008$,,skip],1h)=0'
-              recovery_mode: NONE
+              expression: 'logeventid(/whyborn Microsoft Eventlog ms windows/eventlog[System,,,,^6008$,,skip],,6008)=1 and nodata(/whyborn Microsoft Eventlog ms windows/eventlog[System,,,,^6008$,,skip],15m)=0'
               name: 'ПК был выключен не корректно'
               priority: AVERAGE
               manual_close: 'YES'
