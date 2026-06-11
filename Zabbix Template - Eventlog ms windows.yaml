@@ -12,7 +12,7 @@ zabbix_export:
       template: 'whyborn Microsoft Eventlog ms windows'
       name: 'whyborn Microsoft Eventlog ms windows'
       description: |
-        version. 0.93a
+        version. 0.94a
         7615053@gmail.com
         
         Этот шаблон создан преимущественно для локальных ПК с целью выявления сбоев из-за некорректности действия пользователя
