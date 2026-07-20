@@ -1,0 +1,75 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 4c2d3b50c18d451a8f6352ae07b94420
+      template: 'Template Dr.Web Client Windows Monitoring'
+      name: 'Template Dr.Web Client Windows Monitoring'
+      description: |
+        проверка через za active в eventlog на ошибки и service.info от клиента dr.web windows
+      items:
+        - uuid: e9a3b2c1f4d04825a3c75d61a9e0f240
+          name: 'Dr.Web: Сбой службы (Event 7031)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error","Service Control Manager",^7031$,,skip]'
+          delay: '3m;3m/1-7,08:00-23:00;10m/1-7,23:00-23:59;10m/1-7,00:00-08:00'
+          history: 7d
+          value_type: LOG
+          triggers:
+            - uuid: f2c8d1a4e3b047f9b1d526e8c0a3b4f5
+              expression: 'find(/Template Dr.Web Client Windows Monitoring/eventlog[System,,"Error","Service Control Manager",^7031$,,skip],,"like","Dr.Web")=1'
+              name: 'CRITICAL: Аварийный останов Dr.Web (EventID 7031)'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: b7f23a9d0c41496e821548e736d2c10b
+          name: 'Dr.Web: Внезапная остановка (Event 7034)'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[System,,"Error","Service Control Manager",^7034$,,skip]'
+          delay: '3m;3m/1-7,08:00-23:00;10m/1-7,23:00-23:59;10m/1-7,00:00-08:00'
+          history: 7d
+          value_type: LOG
+          triggers:
+            - uuid: c4a1b9f3d2e047539f4082156ebc9a22
+              expression: 'find(/Template Dr.Web Client Windows Monitoring/eventlog[System,,"Error","Service Control Manager",^7034$,,skip],,"like","Dr.Web")=1'
+              name: 'CRITICAL: Неожиданная остановка Dr.Web (EventID 7034)'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: a1d8f5c9e2b0431289a475d61e0c2f34
+          name: 'Dr.Web: Статус управляющей службы'
+          type: ZABBIX_ACTIVE
+          key: 'service.info[DrWebAVService,state]'
+          delay: 3m
+          history: 7d
+          triggers:
+            - uuid: b2e9a6d0f3c144239ab586e72f1d3a45
+              expression: 'last(/Template Dr.Web Client Windows Monitoring/service.info[DrWebAVService,state])<>0'
+              name: 'Управляющая служба Dr.Web не работает'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: d1c93a84e27f48b19a2046c875d91244
+          name: 'Dr.Web: Проверка установки'
+          type: ZABBIX_ACTIVE
+          key: 'service.info[DrWebAVService]'
+          delay: 1h
+          history: 7d
+          value_type: CHAR
+          triggers:
+            - uuid: 8e54c2d9f71a41eeb05342981fa6d03c
+              expression: 'find(/Template Dr.Web Client Windows Monitoring/service.info[DrWebAVService],,"like","cannot find")=1'
+              name: 'Dr.Web НЕ УСТАНОВЛЕН на {HOST.NAME}'
+              priority: DISASTER
+              manual_close: 'YES'
+        - uuid: c3f0b7e1a4d24534abc697f83a2e4b56
+          name: 'Dr.Web: Статус сканирующего движка'
+          type: ZABBIX_ACTIVE
+          key: 'service.info[DrWebEngine,state]'
+          delay: 3m
+          history: 7d
+          triggers:
+            - uuid: d4a1c8f2b5e34645bcd7a8094b3f5c67
+              expression: 'last(/Template Dr.Web Client Windows Monitoring/service.info[DrWebEngine,state])<>0'
+              name: 'Сканирующий движок Dr.Web не работает'
+              priority: HIGH
+              manual_close: 'YES'
